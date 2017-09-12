@@ -1,0 +1,19 @@
+0) Dirigirse a la carpeta con node.h, node.c, etc
+
+
+1) Instalar omnet++
+    64bit:
+    $ cd /tmp; wget http://cs.famaf.unc.edu.ar/~dmoisset/rysd/omnet64.tar.bz2; tar jxf omnet64.tar.bz2; cd -
+    32bit:
+    $ cd /tmp; wget http://cs.famaf.unc.edu.ar/~dmoisset/rysd/omnet32.tar.bz2; tar jxf omnet32.tar.bz2; cd -
+
+
+2) Poner en esta carpeta docentes.o (puede que de error al compilar si es asi probar con otra version):
+    64 bit:
+    $ wget -O docente.o https://cs.famaf.unc.edu.ar/materias/redes/svn/trunk/Lab-omnet/kickstart/docente.o.x86_64 --no-check-certificate
+    32 bit (no probado):
+    $ wget -O docente.o https://cs.famaf.unc.edu.ar/materias/redes/svn/trunk/Lab-omnet/kickstart/docente.o.i386 --no-check-certificate
+
+
+3) Ejecutar:
+    $ make clean; cd /tmp/omnetpp-4.4.1/ ; . setenv; cd - ; make; ./arplab

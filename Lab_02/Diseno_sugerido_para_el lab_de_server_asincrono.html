@@ -1,0 +1,107 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+</head><body><h1>Diseño sugerido para el lab de server asíncrono</h1>
+
+<h3>31 de Marzo de 2015</h3>
+
+<h3>Redes y Sistemas Distribuidos</h3>
+
+<h3>Revisión 2015, Matias Tealdi FaMAF - UNC</h3>
+
+<h3>Revisión 2014, Carlos S. Bederián FaMAF - UNC</h3>
+
+<h3>Revisión 2012, Daniel F. Moisset FaMAF - UNC</h3>
+
+<h2>Una sola instancia de la clase <code>AsyncServer</code></h2>
+
+<p>Esta instancia es la que centraliza el manejo de tareas. Es el único
+lugar del programa donde se llama a <code>poll()</code>. Tiene adentro un
+conjunto de todas las conexiones (instancias de <code>Connection</code>), lo que
+incluye cada una de las conexiones entrantes y el socket donde se hace el 
+<code>listen()</code>.</p>
+
+<p>Tiene un método <code>serve()</code> que en un ciclo infinito calcula el polling set,
+llama a <code>poll()</code>, maneja eventos en todas las conexiones, y borra las
+conexiones que terminaron.</p>
+
+<pre><code>!python
+class AsyncServer(object):
+    def __init__ (self, ...):
+        # Aquí se crea la conexion que hace listen
+
+    def serve(self):
+        ...
+</code></pre>
+
+<h2>Múltiples instancias de <code>Connection</code></h2>
+
+<pre><code>!python
+class Connection(object):
+    """Abstracción de conexión. Maneja colas de entrada y salida de datos.
+    """
+
+    def __init__ (self, fd, address = ''):
+        """Crea una conexión asociada al descriptor fd"""
+        self.socket = fd        # file descriptor del socket
+        self.input = ''         # cola de entrada
+        self.output = ''        # cola de salida
+        self.address = address  # dirección del cliente
+        self.remove = False     # flag para señalar al servidor
+                                # que la conexión terminó
+
+    def handle_output(self):
+        # Aquí esta la única llamada a `socket.send` del programa
+        # Saca datos de la cola de salida
+        # debería ser llamado por AsyncServer cuando `poll` dice que
+        # está lista para mandar
+
+    def handle_input(self):
+        # Aquí esta la única llamada a `socket.recv` del programa
+        # Mete datos en la cola de entrada
+        # debería ser llamado por AsyncServer cuando `poll` dice que hay
+        # datos
+
+    def events(self):
+        # Devuelve los eventos (POLLIN, POLLOUT) que le interesan
+        # a la conexión en este momento
+</code></pre>
+
+<p>Cada conexión tiene adentro lo siguiente:</p>
+
+<ul>
+<li>El <code>socket</code> al cual esta asociado (puede ser otro archivo, por ejemplo <code>stdin</code>).</li>
+<li>Colas de <code>input</code> y de <code>output</code>.</li>
+<li>La dirección <code>address</code> (IP y puerto) para identificarlo (esto es útil
+para distinguir las conexiones a nodos).</li>
+<li>Un flag <code>remove</code> inicializado en <code>False</code> que se cambia a <code>True</code> cuando se
+desea cerrar la conexión.</li>
+</ul>
+
+<p>Además tiene operaciones que manejan la entrada y salida de datos, usando las colas 
+de entrada o salida según corresponda. El resto del programa no debería tocar nunca
+los sockets, sino que usar las cosas.</p>
+
+<h2>Responsabilidades</h2>
+
+<p>Las siguientes son algunas de las responsabilidades más relevantes de cada uno 
+de los módulos:</p>
+
+<ul>
+<li><strong>AsyncServer</strong>
+<ul>
+<li>Llevar cuenta de las conexiones que se crean y se destruyen.</li>
+<li>Manejar el ciclo principal donde el sistema pasa la mayor parte del tiempo.</li>
+<li>Construir el polling set en base a las direcciones que informan las conexiones.</li>
+<li>Invocar a los métodos <code>handle_input()</code> y <code>handle_output()</code> de las conexiones en base a los
+eventos recibidos.</li>
+<li>Eliminar las conexiones marcadas con removed y que no tienen datos para enviar.</li>
+</ul></li>
+<li><strong>Connection</strong>
+<ul>
+<li>Mandar datos al socket en funcion del contenido de las colas</li>
+<li>Al llamarse a event(), manejar lo que llego (ya sea conexion nueva o
+comando).</li>
+<li>Pedir ser removido si la conexión se cierra, o si hay un error.</li>
+</ul></li>
+</ul>
+</body></html>

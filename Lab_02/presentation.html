@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2010 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Ernest Delgado (ernestd@google.com)
+                 Alex Russell (slightlyoff@chromium.org)
+
+  landslide modifications: Adam Zapletal (adamzap@gmail.com)
+                           Nicolas Perriault (nperriault@gmail.com)
+-->
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>C10K</title>
+    <!-- Styles -->
+    
+    <link rel="stylesheet" media="print" href="presentation_archivos/print.css">
+    <link rel="stylesheet" media="screen, projection" href="presentation_archivos/screen.css">
+    
+    
+    <!-- /Styles -->
+    <!-- Javascripts -->
+    
+    <script type="text/javascript" src="presentation_archivos/slides.js"></script>
+    
+    
+    <!-- /Javascripts -->
+</head>
+<body>
+  <div id="blank"></div>
+  <div class="presentation">
+    <div id="current_presenter_notes">
+      <div id="presenter_note"></div>
+    </div>
+    <div class="slides">
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>C10K</h1></header>
+            
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              1/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>El problema</h1></header>
+            
+            
+            <section><ul>
+<li>Originalmente formulado circa 1999</li>
+<li>¿Cómo hacer que un servidor maneje 10000 conexiones simultáneas?</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              2/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Motivación</h1></header>
+            
+            
+            <section><ul>
+<li>Poder manejar esa cantidad de clientes implica mejorar la eficiencia para varios recursos:<ul>
+<li>CPU</li>
+<li>Memoria</li>
+<li>Ancho de banda</li>
+</ul>
+</li>
+<li>Incluso una ganancia minúscula es muy significativa a nivel global</li>
+<li>Mejora la experiencia del usuario</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              3/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Procesos</h1></header>
+            
+            
+            <section><ul>
+<li>Solución clásica derivada de concurrencia en sistemas operativos</li>
+<li><code>accept()</code> -&gt; <code>fork()</code> -&gt; Servir</li>
+</ul>
+<h2>Pros:</h2>
+<ul>
+<li>Procesos aislados: robusto, seguro</li>
+<li>El código es muy sencillo</li>
+<li>Usa muchos cores automáticamente</li>
+</ul>
+<h2>Contras:</h2>
+<ul>
+<li>Limitado por cantidad máxima de procesos del OS</li>
+<li>Costo alto de CPU (creación y context switch)</li>
+<li>Costo alto de ocupación de memoria</li>
+<li>Compartir recursos no es sencillo (shm, mmap)<ul>
+<li>Manejar concurrencia para recursos compartidos</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              4/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Hilos</h1></header>
+            
+            
+            <section><ul>
+<li>Intento de adelgazar un poco el modelo de procesos</li>
+<li><code>accept()</code> -&gt; <code>clone()</code> -&gt; Servir</li>
+</ul>
+<h2>Pros:</h2>
+<ul>
+<li>¿Menores costos de creación y cambio de contexto?</li>
+<li>Compartir recursos es directo</li>
+<li>Usa muchos cores automáticamente</li>
+</ul>
+<h2>Contras:</h2>
+<ul>
+<li>Limitado por cantidad máxima de hilos disponibles</li>
+<li>Un stack por hilo (<code>ulimit -s</code>)</li>
+<li>Manejar concurrencia en todo!</li>
+<li>Poco robusto</li>
+<li>En Python: <a href="http://en.wikipedia.org/wiki/Global_Interpreter_Lock">GIL</a>
+usa solo <strong>un core</strong>, está bien para trabajos puramente <strong>IO-bound</strong></li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              5/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Procesos vs. hilos en la práctica</h1></header>
+            
+            
+            <section><ul>
+<li>
+<p>La creación de procesos e hilos está hiperoptimizada</p>
+<ul>
+<li><code>fork()</code> está implementado con <code>clone()</code></li>
+<li>Todo lo que supuestamente se tiene que copiar es Copy-On-Write</li>
+</ul>
+</li>
+<li>
+<p>Aún así, un <code>fork()</code> o <code>clone()</code> por conexión es excesivo</p>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              6/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Preforking</h1></header>
+            
+            
+            <section><ul>
+<li>Amortizar el costo sirviendo varios clientes por proceso</li>
+<li><code>fork()</code> =&gt; (mutex =&gt; <code>accept()</code> =&gt; Servir)*</li>
+<li>Reduce tiempo de respuesta de la conexión</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              7/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Pero...</h1></header>
+            
+            
+            <section><p>Servidores http populares que usan lo anterior exclusivamente: <strong>0</strong></p>
+<p>Los mecanismos que hacen uso de la concurrencia explícita tienen <strong>graves problemas de escalabilidad</strong></p>
+<ul>
+<li>Intensivos en <strong>ciclos de CPU</strong> por cambios de contexto frecuentes</li>
+<li>Intensivos en <strong>memoria</strong> por tener un stack por cliente</li>
+<li>La cantidad de procesos/hilos usualmente está limitada</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              8/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Muchos clientes, un proceso</h1></header>
+            
+            
+            <section><p>El correr en un solo proceso implica varias cosas:</p>
+<ul>
+<li>Cantidad mínima de llamadas que bloquean: <strong>1</strong><ul>
+<li>Envío y recepción no bloqueante</li>
+</ul>
+</li>
+<li>Si se bloquea, tiene que ser sobre todas las conexiones de manera simultánea<ul>
+<li>El mecanismo tiene que poder escalar!</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              9/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1><code>poll</code> y <code>select</code></h1></header>
+            
+            
+            <section><ul>
+<li>Llamadas estándar para multiplexar eventos de I/O<ul>
+<li><code>poll</code> es de UNIX System V, 1983</li>
+<li><code>select</code> es de 4.2BSD, 1983</li>
+</ul>
+</li>
+<li>Le pedimos al sistema operativo que vigile un conjunto de sockets y 
+retorne cuando pase algo interesante en al menos uno de ellos</li>
+<li>Operamos de manera asíncrona con los sockets donde pasó algo</li>
+<li>Toda la presión migra a estas llamadas<ul>
+<li><code>poll</code> y <code>select</code> son <strong>O(n)</strong></li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              10/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Pero...</h1></header>
+            
+            
+            <section><p>O(n) no sirve para el <em>n</em> grande que queríamos!</p>
+<ul>
+<li>Cada sistema operativo implementa su propia versión mejorada del mecanismo:<ul>
+<li>Linux: <code>epoll</code></li>
+<li>Windows: I/O Completion Ports</li>
+<li>FreeBSD: <code>kqueue</code></li>
+</ul>
+</li>
+<li>Todas son <strong>O(1)</strong></li>
+<li>Portabilidad a la basura</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              11/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Ahora si?</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="lineno"> 1</span> <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="lineno"> 2</span>     <span class="n">events</span> <span class="o">=</span> <span class="n">epoll</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+<span class="lineno"> 3</span>     <span class="k">for</span> <span class="n">fileno</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<span class="lineno"> 4</span>         <span class="k">if</span> <span class="n">fileno</span> <span class="o">==</span> <span class="n">server</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
+<span class="lineno"> 5</span>             <span class="c"># client connect...</span>
+<span class="lineno"> 6</span>         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">:</span>
+<span class="lineno"> 7</span>             <span class="c"># client request...</span>
+<span class="lineno"> 8</span>         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLOUT</span><span class="p">:</span>
+<span class="lineno"> 9</span>             <span class="n">c</span> <span class="o">=</span> <span class="n">connection</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+<span class="lineno">10</span>             <span class="n">c</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">CHUNK</span><span class="p">)</span>
+<span class="lineno">11</span>             <span class="n">c</span><span class="o">.</span><span class="n">sent</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+<span class="lineno">12</span>             <span class="c"># ...</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              12/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Mejorando el resto del I/O</h1></header>
+            
+            
+            <section><ul>
+<li>Debemos tratar el I/O de disco igual o mejor que a los sockets</li>
+<li>I/O no bloqueante: <code>O_NONBLOCK</code><ul>
+<li>Todos los mecanismos mostrados anteriormente funcionan igual para file descriptors</li>
+<li>El SO nos avisa cuando podemos realizar una operación sin bloquear</li>
+</ul>
+</li>
+<li>I/O asíncrono: AIO, <code>O_ASYNC</code><ul>
+<li>Le pedimos al SO que haga I/O y nos avisa cuando terminó</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              13/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Y ahora?</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="lineno"> 1</span> <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="lineno"> 2</span>     <span class="n">events</span> <span class="o">=</span> <span class="n">epoll</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+<span class="lineno"> 3</span>     <span class="k">for</span> <span class="n">fileno</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<span class="lineno"> 4</span>         <span class="k">if</span> <span class="n">fileno</span> <span class="o">==</span> <span class="n">server</span><span class="o">.</span><span class="n">fileno</span><span class="p">():</span>
+<span class="lineno"> 5</span>             <span class="c"># client connect...</span>
+<span class="lineno"> 6</span>         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLIN</span><span class="p">:</span>
+<span class="lineno"> 7</span>             <span class="k">if</span> <span class="n">fileno</span> <span class="ow">in</span> <span class="n">sockets</span><span class="p">:</span>
+<span class="lineno"> 8</span>                 <span class="c"># client request...</span>
+<span class="lineno"> 9</span>             <span class="k">else</span><span class="p">:</span>
+<span class="lineno">10</span>                 <span class="n">c</span> <span class="o">=</span> <span class="n">connection</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+<span class="lineno">11</span>                 <span class="n">c</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">CHUNK</span><span class="p">)</span>
+<span class="lineno">12</span>                 <span class="c"># ...</span>
+<span class="lineno">13</span>         <span class="k">elif</span> <span class="n">event</span> <span class="o">&amp;</span> <span class="n">select</span><span class="o">.</span><span class="n">EPOLLOUT</span><span class="p">:</span>
+<span class="lineno">14</span>             <span class="k">if</span> <span class="n">fileno</span> <span class="ow">in</span> <span class="n">sockets</span><span class="p">:</span>
+<span class="lineno">15</span>                 <span class="n">c</span> <span class="o">=</span> <span class="n">connection</span><span class="p">[</span><span class="n">fileno</span><span class="p">]</span>
+<span class="lineno">16</span>                 <span class="n">c</span><span class="o">.</span><span class="n">sent</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+<span class="lineno">17</span>                 <span class="c"># ...</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              14/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>El servidor como intermediario</h1></header>
+            
+            
+            <section><p>fd -&gt; <code>epoll()</code> -&gt; <code>read()</code> -&gt; buffer -&gt; <code>epoll()</code> -&gt; send()</p>
+<ul>
+<li>Cambios de contexto excesivos!</li>
+<li>Buffer intermedio en espacio de usuario innecesario!</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              15/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>El kernel al rescate (otra vez)</h1></header>
+            
+            
+            <section><p>El kernel provee mecanismos eficientes de transferencia sin pasar por el espacio de usuario:</p>
+<ul>
+<li><code>mmap()</code> + <code>write()</code><ul>
+<li>Mapea los contenidos de un archivo a memoria virtual y hace paginamiento</li>
+<li>El kernel evita hacer copias internamente ("zero copy")</li>
+<li>Limitado por el espacio de memoria virtual (256TB en x86-64, pero 4GB en x86)</li>
+</ul>
+</li>
+<li><code>splice()</code> y <code>sendfile()</code><ul>
+<li>Copia entre dos file descriptors sin pasar por espacio de usuario</li>
+<li><code>sendfile()</code> está implementado sobre <code>splice()</code></li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              16/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Listo...no?</h1></header>
+            
+            
+            <section><p>Incluso haciendo todo esto, seguimos limitados:</p>
+<ul>
+<li>Cantidad de <code>fd</code>s que maneja el OS.<ul>
+<li><code>cat /proc/sys/fs/file-max</code>.</li>
+<li>La base no es despreciable: <code>sudo lsof | wc -l</code>.</li>
+</ul>
+</li>
+<li>Sólo movimos datos, falta generar la respuesta también!</li>
+<li>Usualmente <strong>no</strong> se espera que un solo servidor maneje más de C10K.<ul>
+<li>Pero <strong>si</strong> se espera que sea eficiente con las conexiones que le tocan</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              17/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h2>¿Entonces?</h2></header>
+            
+            
+            <section><ul>
+<li>Filosofía general: Dejar que otro se encargue de la complejidad<ul>
+<li>Manejo de eventos: usar una biblioteca o framework<ul>
+<li>libev, libevent, Twisted (Python)</li>
+</ul>
+</li>
+<li>Protocolos propios:<ul>
+<li><a href="http://www.zeromq.org/">ZeroMQ</a></li>
+</ul>
+</li>
+<li>Computación de alto desempeño:<ul>
+<li>MPI (Arquitectura del computador)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              18/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Otras ayudas</h1></header>
+            
+            
+            <section><ul>
+<li>Load balancing<ul>
+<li>Trucos de DNS, CDN</li>
+<li>Reverse proxies (<a href="http://varnish-cache.org/">Varnish</a>, <a href="http://nginx.org/en/">nginx</a>)</li>
+</ul>
+</li>
+<li>Cache!<ul>
+<li>Respuesta completa: Reverse proxies </li>
+<li>Datos que forman la respuesta (<a href="http://memcached.org/">memcached</a>)</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              19/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>En el mundo real (Mayo 2013)</h1></header>
+            
+            
+            <section><ul>
+<li>Apache (53% de los sitios web): Implementa varios modelos, la mayoría usa <code>epoll</code> con preforking (gracias a PHP)</li>
+<li>IIS (17% de los sitios web): IOCP, kernel caching</li>
+<li>nginx (16% de los sitios web): Reactor usando <code>epoll</code></li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              20/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+      <!-- slide source: c10k.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Material interesante</h1></header>
+            
+            
+            <section><ul>
+<li><a href="http://www.kegel.com/c10k.html#nb.epoll"><em>The C10K Problem</em></a>: <a href="http://marc.theaimsgroup.com/?l=linux-kernel&amp;m=103607925020720&amp;w=2">unifying epoll, aio, and other event sources</a>.</li>
+<li>Ver slide 18 de <a href="http://www.kernel.org/pub/linux/kernel/people/suparna/aio-linux.pdf">Linux Asynchronous I/O Design: Evolution &amp; Challenges</a>.</li>
+<li><a href="http://www.aosabook.org/en/nginx.html">The architecture of Open Source Applications</a></li>
+<li><a href="http://www.usenix.org/event/usenix99/full_papers/banga/banga_html/final2.html">A scalable and explicit event delivery mechanism for UNIX</a>.</li>
+<li><a href="http://www.facebook.com/notes.php?id=9445547199">Notas de Facebook Engineering</a>:<ul>
+<li><a href="http://www.facebook.com/note.php?note_id=39391378919">Scaling memcached at Facebook</a>.</li>
+<li><a href="http://opencompute.org/">Open Compute Project</a>.</li>
+</ul>
+</li>
+<li>Cuevana: <a href="http://alt-tab.com.ar/como-funciona-cuevana/">Alt-tab, "Como funciona Cuevana"</a>.</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Presenter Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="http://www.famaf.proed.unc.edu.ar/pluginfile.php/15859/mod_resource/content/2/c10k.md">c10k.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              21/21
+            </aside>
+          </footer>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div id="toc" class="sidebar hidden">
+    <h2>Table of Contents</h2>
+    <table>
+      <caption>Table of Contents</caption>
+      
+      <tbody><tr id="toc-row-1">
+        <th><a href="#slide1">C10K</a></th>
+        <td><a href="#slide1">1</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-2">
+        <th><a href="#slide2">El problema</a></th>
+        <td><a href="#slide2">2</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-3">
+        <th><a href="#slide3">Motivación</a></th>
+        <td><a href="#slide3">3</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-4">
+        <th><a href="#slide4">Procesos</a></th>
+        <td><a href="#slide4">4</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-5">
+        <th><a href="#slide5">Hilos</a></th>
+        <td><a href="#slide5">5</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-6">
+        <th><a href="#slide6">Procesos vs. hilos en la práctica</a></th>
+        <td><a href="#slide6">6</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-7">
+        <th><a href="#slide7">Preforking</a></th>
+        <td><a href="#slide7">7</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-8">
+        <th><a href="#slide8">Pero...</a></th>
+        <td><a href="#slide8">8</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-9">
+        <th><a href="#slide9">Muchos clientes, un proceso</a></th>
+        <td><a href="#slide9">9</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-10">
+        <th><a href="#slide10"><code>poll</code> y <code>select</code></a></th>
+        <td><a href="#slide10">10</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-11">
+        <th><a href="#slide11">Pero...</a></th>
+        <td><a href="#slide11">11</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-12">
+        <th><a href="#slide12">Ahora si?</a></th>
+        <td><a href="#slide12">12</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-13">
+        <th><a href="#slide13">Mejorando el resto del I/O</a></th>
+        <td><a href="#slide13">13</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-14">
+        <th><a href="#slide14">Y ahora?</a></th>
+        <td><a href="#slide14">14</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-15">
+        <th><a href="#slide15">El servidor como intermediario</a></th>
+        <td><a href="#slide15">15</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-16">
+        <th><a href="#slide16">El kernel al rescate (otra vez)</a></th>
+        <td><a href="#slide16">16</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-17">
+        <th><a href="#slide17">Listo...no?</a></th>
+        <td><a href="#slide17">17</a></td>
+      </tr>
+      
+        
+        <tr id="toc-row-18" class="sub">
+          <th><a href="#slide18">¿Entonces?</a></th>
+          <td><a href="#slide18">18</a></td>
+        </tr>
+        
+      
+      
+      <tr id="toc-row-19">
+        <th><a href="#slide19">Otras ayudas</a></th>
+        <td><a href="#slide19">19</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-20">
+        <th><a href="#slide20">En el mundo real (Mayo 2013)</a></th>
+        <td><a href="#slide20">20</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-21">
+        <th><a href="#slide21">Material interesante</a></th>
+        <td><a href="#slide21">21</a></td>
+      </tr>
+      
+      
+    </tbody></table>
+  </div>
+  
+  <div id="help" class="sidebar hidden">
+    <h2>Help</h2>
+    <table>
+      <caption>Help</caption>
+      <tbody><tr>
+        <th>Table of Contents</th>
+        <td>t</td>
+      </tr>
+      <tr>
+        <th>Exposé</th>
+        <td>ESC</td>
+      </tr>
+      <tr>
+        <th>Full screen slides</th>
+        <td>e</td>
+      </tr>
+      <tr>
+        <th>Presenter View</th>
+        <td>p</td>
+      </tr>
+      <tr>
+        <th>Source Files</th>
+        <td>s</td>
+      </tr>
+      <tr>
+        <th>Slide Numbers</th>
+        <td>n</td>
+      </tr>
+      <tr>
+        <th>Toggle screen blanking</th>
+        <td>b</td>
+      </tr>
+      <tr>
+        <th>Show/hide slide context</th>
+        <td>c</td>
+      </tr>
+      <tr>
+        <th>Notes</th>
+        <td>2</td>
+      </tr>
+      <tr>
+        <th>Help</th>
+        <td>h</td>
+      </tr>
+    </tbody></table>
+  </div>
+  <script>main()</script>
+
+</body></html>

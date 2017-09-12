@@ -1,0 +1,28 @@
+send_to_ip(ip, data) {
+    if (conozco(ip)) {
+        armar_frame_ip(...)
+        send_ethernet_packet(...)
+        return 0
+    }
+    else {
+        armar_frame_arp(...)
+        send_ethernet_packet(...)
+        return 1
+    }
+}
+
+receive_ip_packet(packet) {
+    if (tipo == ARP) {
+        // Respuesta
+        if (reply) {
+            actualizar_tabla_arp(.)
+        }
+        else {
+            generar_resp_arp(...)
+            send_ethernet_packet(...)
+        }
+    }
+    else if (tipo == IP) {
+        recieve_ip_packet(...)
+    }
+}

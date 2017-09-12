@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- saved from url=(0099)http://www.famaf.proed.unc.edu.ar/pluginfile.php/15836/mod_resource/content/5/Lab-omnet%202015.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Author" content="Rafael Carrascosa">
+	<meta name="Keywords" content="arp network distributed systems redes sistemas distribuídos FaMAF education educación">
+	
+	
+	<style type="text/css">
+		H1, H2, H3, DIV, P, LI,
+		UL, OL, TABLE, TD, TR {font-family: lucida sans, helvetica, arial, sans-serif;}
+		pre {background: #eee; border: 1px dashed #889; margin-left: 3em; padding: 1ex;}
+		dt {font-family: monospace; font-weight: bold;}
+	</style>
+	<title>Redes y Sistemas Distribuídos -- Laboratorio Omnet</title>
+</head>
+
+<body>
+<h1>Laboratorio: omnet</h1>
+<p>
+Cátedra de Redes y Sistemas Distribuidos
+<br>Original 2013, Rafael Carrascosa (basado fuertemente en Lab-cnet)
+<br>2014, Daniel Moisset
+<br>2015, Mariano Volarik
+
+
+</p><h2>Objetivos</h2>
+<ul>
+<li> Implementar un protocolo de capas inferiores a la de aplicación.</li>
+<li> Aprender a trabajar sobre un protocolo binario. </li>
+<li> Aprender a leer una especificación de protocolo real (como un RFC).</li>
+</ul>
+
+
+<h2>Motivación</h2>
+
+<p>Las redes basadas en los estándares 802.x (popularmente conocidas como 
+Ethernet, o WiFi en el caso de 802.11) son por lejos la forma más popular de
+crear redes de área local (LANs). Por otro lado, la pila de protocolos TCP/IP son los
+protocolos más ampliamente usados en las capas de red y transporte.</p>
+
+<p>Los dos sistemas de protocolos fueron diseñados independientemente y funcionan
+en capas distintas; por lo tanto usan <b>esquemas de direcciones completamente
+diferentes</b>. Un elemento clave para poder usar LANs 802.x como parte de inter-redes TCP/IP
+es poder realizar una <b>traducción de direcciones entre los protocolos</b>. Mantener
+una tabla manualmente sería impráctico, así que la forma usual de mapear direcciones
+es construir la tabla automáticamente usando un protocolo llamado ARP, que
+podría ubicarse entre las capas de enlace de datos y transporte (tiene elementos de ambas).</p>
+
+<p>Puede encontrarse información adicional sobre ARP en:</p>
+
+<ul>
+    <li><a href="http://www.faqs.org/rfcs/rfc826.html">RFC826</a>, la especificación oficial del protocolo</li>
+    <li>El libro de redes de Tanenbaum (busquen "Address Resolution Protocol" en el índice)</li>
+    <li>La <a href="http://en.wikipedia.org/wiki/Address_Resolution_Protocol">entrada en Wikipedia sobre ARP</a>; si bien es un artículo enciclopédico y no una especificación, incluye detalles técnicos no presentes en el libro de Tanenbaum.</li>
+    <li>La manpage que describe aspectos de la implementación de ARP incluida en el kernel de linux: <code>man 7 arp</code></li>
+    <li>La documentación del comando de Linux para controlr la implementación de ARP incluida en el kernel de linux: <code>man 8 arp</code></li>
+
+</ul>
+
+<h2>Tarea</h2>
+
+<p>El trabajo en este laboratorio consiste en hacer una implementación de ARP 
+de acuerdo a la especificación dada en el RFC826.</p>
+
+<p>Dado que las primitivas de socket utilizadas anteriormente están diseñadas para ser usadas
+en protocolos de capa de aplicación, no las estaremos usando durante este laboratorio. Los
+protocolos de capa de enlace de datos o red usualmente se implementan a nivel kernel, pero
+eso trae dificultades de implementación que no son relevantes en esta materia. Por lo tanto
+estaremos usando un <b>simulador de redes</b> llamado 
+<a href="http://www.omnetpp.org/">omnet</a>. Para hacer correctamente el lab es
+necesario usar la versión 4.4</p>
+
+<p>Omnet permite simular una red con múltiples equipos en la que cada equipo
+simulado corre un programa en C con la implementación del
+protocolo; este programa en C debe usar algunas funciones de omnet para realizar las operaciones de red. 
+</p>
+
+<p>Deberán:</p>
+<ol>
+	<li>Instalar Omnet:
+    <ol>
+        <li> Ya sea compilando las <a href="http://www.omnetpp.org/omnetpp/doc_details/2272-omnet-441-source--ide-tgz">fuentes</a></li>
+        <li> O usando el <a href="http://cs.famaf.unc.edu.ar/~dmoisset/rysd/omnet64.tar.bz2">pre-compilado (64 bits)</a>. Descomprimirlo en <code>/tmp</code>
+             y ejecutar en bash "<code>cd /tmp/omnetpp-4.4.1/ ; . setenv</code>" </li>. También hay un <a href="http://cs.famaf.unc.edu.ar/~dmoisset/rysd/omnet32.tar.bz2">pre-compilado de 32 bits</a>
+    </ol>
+    En los laboratorios se recomienda usar el precompilado (también esta linkeado en el moodle).
+    </li>
+	<li>Hacer su propia implementación de ARP dentro de omnet, completando las funciones <code>send_to_ip</code> y <code>receive_ethernet_packet</code>
+        que están en <b><code>arplab.cc</code></b>.</li>
+	<li>Validar su implementación haciéndola interoperar con una que les proveerá la cátedra en formato binario.</li>
+</ol>
+
+
+<h2>La capas simuladas</h2>
+
+<p>El kickstart provee una emulación de capas física y de red. Como ARP se sitúa entre ambas capas, deberán interactuar con ellas
+
+La capa de red tiene la funcionalidad necesaria para poder testear/simular ARP;
+esta funcionalidad se concentra en operar con direcciones IP, y en generar/recibir mensajes de prueba.
+
+La capa de física es más simple y se limita a enviar y recibir paquetes ethernet sin interpretarlos</p>
+
+<p>La comunicación con cada capas es en los dos sentidos (enviar y recibir) y
+existe una funcion para enviar y recibir datos por cada capa. A saber, son:</p>
+<ol>
+    <li><code>send_to_ip</code>: El modulo ARP recibe datos de la capa de red</li>
+    <li><code>receive_ip_packet</code>: El modulo ARP envía datos a la capa de red</li>
+    <li><code>send_ethernet_packet</code>: El modulo ARP envía datos a la capa de física</li>
+    <li><code>receive_ethernet_packet</code>: El modulo ARP recibe datos de la capa de física</li>
+</ol>
+
+<p>De estas 4 funciones, <code>send_to_ip</code> y <code>receive_ethernet_packet</code>
+ son llamadas cuando ocurren eventos de omnet y
+<code>receive_ip_packet</code> y <code>send_ethernet_packet</code> serán llamadas
+por el código de su módulo ARP cuando ustedes los consideren apropiado.
+</p>
+
+<h2>Suposiciones permitidas</h2>
+
+<p>Para simplificar la implementación y enfocar el laboratorio a los aspectos
+esenciales, esta permitido (y se <b>recomienda</b>) trabajar con las siguientes suposiciones:</p>
+
+<ol>
+   <li>La implementación de ARP a proveer maneja un solo enlace ethernet,
+   el cual es el único enlace externo del nodo.</li>
+   <li>La capa de red provista usa una red IP clase C; esto implica que sólo
+   hay 255 direcciones posibles, con lo cual pueden hacer una tabla ARP de
+   tamaño fijo (Si bien no es válido como solución general, es un supuesto
+   permitido para simplificar el ejercicio).</li>
+</ol>
+
+
+<h2>Recomendaciones a tener en cuenta</h2>
+
+<p>EL RFC de ARP contiene pseudocódigo con la implementación del algoritmo al
+momento de recibir un paquete. Traten de seguirlo lo más fielmente posible.</p>
+
+<p>Observen los mensajes de debugging de la implementación binaria
+provista, pueden ser útiles para detectar errores.</p>
+
+<p>Verifiquen que sus nodos se comuniquen correctamente con los de la cátedra.
+La capa de red provista manda mensajes de todos lados a todos lados, con lo cual
+luego de algunos segundos de simulación, las tablas ARP de cada nodo deberían
+contener las direcciones del resto de los nodos.</p>
+
+<p>Se puede hacer todo el laboratorio <b>sin usar malloc</b>, y eso es muy recomendado (Nuevamente, por simplicidad).</p>
+
+<p>Estudiar lo que significa <code>__attribute__ ((__packed__))</code> y para qué sirve.</p>
+
+<h2>Requisitos del código a entregar</h2>
+<ul>
+<li>La fecha de entrega es el Lunes 12 de Mayo a las 23:59hs.</li>
+<li>Las direcciones de ip/mac están dadas; no pueden modificar el archivo <code>.ned</code> ni cambiarlas .</li>
+<li>Los structs que se usen para paquetes de red deberán tener <code>__attribute__ ((__packed__))</code></li>
+<li>Todo el código de los alumnos debera estar en <code>arplab.cc</code> y <code>node.h</code>,
+    de haber cambios a otros archivos del kickstart deberán estár sólidamente funtamentados.
+</li><li>Se deberá entregar al repositorio git (via commits, normal).</li>
+<li>Junto con el código, se deberá entregar un <b>informe</b> en el cual se explique detalladamente
+    la estructuración del código, las decisiones de diseño tomadas,
+	dificultades con las que se encontraron, y cómo las resolvieron.
+    El formato de dicho informe queda a elección de ustedes, siempre y cuando sea un formato libre.</li>
+<li>Se deberá mantener un estilo de codificación uniforme.</li>
+<li>El trabajo es grupal. Todos los integrantes del grupo deberán ser capaces de
+explicar el código presentado.</li>
+<li>No está permitido compartir código entre grupos.</li>
+</ul>
+
+
+
+</body></html>

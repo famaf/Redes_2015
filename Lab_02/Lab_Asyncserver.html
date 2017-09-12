@@ -1,0 +1,544 @@
+<!--?xml version="1.0" encoding="utf-8" ?-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/">
+<title>Laboratorio: asyncserver</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 7056 2011-06-17 10:50:48Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="laboratorio-asyncserver">
+<h1 class="title">Laboratorio: asyncserver</h1>
+
+<p>Cátedra de Redes y Sistemas Distribuidos</p>
+<blockquote>
+<p>Revisión 2015, Matias Tealdi</p>
+<p>Revisión 2012-2014, Carlos Bederián</p>
+<p>Revisión 2011, Nicolás Wolovick</p>
+<p>Revisión 2010, Daniel Moisset</p>
+<p>Original 2009, Carolina Dania, Daniel Moisset</p>
+</blockquote>
+<div class="section" id="objetivos">
+<h1>Objetivos</h1>
+<ul class="simple">
+<li>Aprender a manejar pedidos de <strong>múltiples clientes</strong> de forma
+concurrente.</li>
+<li><strong>Adaptar</strong> el servidor de HFTP para que acepte múltiples conexiones
+usando la primitiva <tt class="docutils literal">poll</tt>.</li>
+<li><strong>Evaluar el diseño</strong> del servidor monocliente luego de la
+adaptación.</li>
+<li>Entender de manera básica los problemas de <strong>escalabilidad</strong> que
+enfrenta un servidor.</li>
+</ul>
+</div>
+<div class="section" id="motivacion">
+<h1>Motivación</h1>
+<p>Es necesario que aplicaciones destinadas a brindar cualquier tipo de
+servicios cuenten con una gran disponibilidad. Actualmente podemos
+observar muchas aplicaciones exitosas, las cuales deben gran parte de su
+éxito al hecho de satisfacer esta necesidad. Esto es fácil de observar
+en servicios destinados a las comunicaciones. Imagínensen el caos que
+ocurriría si la red de telecomunicaciones permitiera que tan solo una
+persona en Córdoba pudiera hablar en un determinado instante de tiempo.
+Seguramente habría fracasado como idea.</p>
+<p>Consideramos entonces importante en redes que los servidores destinados
+a proveer algún tipo de servicio puedan ser usados por <strong>varios clientes
+al mismo tiempo</strong>, y en lo posible que sean <strong>escalables</strong> es decir se
+comporten bien cuando aumenta la demanda.</p>
+</div>
+<div class="section" id="paralelismo-como">
+<h1>Paralelismo: ¿Cómo?</h1>
+<p>Para lograr que el servidor atienda múltiples pedidos simultáneamente,
+se suele usar alguna de estas opciones:</p>
+<ul class="simple">
+<li><em>Procesos</em>: Para servidores simples se puede hacer un <tt class="docutils literal">fork()</tt> cada
+vez que llega una conexión, teniendo <strong>un proceso por conexión</strong>. Una
+limitación de esta técnica es compartir estado si las conexiones no
+son independientes. Además es caro para el sistema operativo tener
+muchos procesos, lo que puede darse si hay muchas conexiones
+simultáneas. Es la manera clásica de UNIX para manejar múltiples
+clientes desde los 80's.</li>
+<li><em>Threads</em>: Creando un thread por conexión se puede tener una
+situación similar a la creación de un thread por proceso, pero es más
+fácil compartir el estado. El problema principal de esta técnica son
+las dificultades inherentes al manejo y sincronización de la
+estructura de datos compartida (deadlocks, race conditions, etc.).
+Aunque es un problema mucho más acotado que con los procesos, el
+consumo de recursos puede ser también muy alto.</li>
+<li><em>Multiplexación (``select, poll, epoll``)</em>: Existen varios syscalls
+que permiten realizar servidores multiconexión con <strong>un solo hilo de
+un solo proceso</strong>. En este caso compartir el estado es trivial y no
+hay problemas de concurrencia. La principal desventaja de este
+mecanismo es que el <strong>flujo de control en el servidor es más
+complejo</strong> ya que se está alternando entre las diferentes conexiones
+de manera secuencial.</li>
+</ul>
+<p>Para este Laboratorio se deberá implementar un <strong>servidor multiplexado</strong>
+usando la llamada a sistema <tt class="docutils literal">poll()</tt>.</p>
+<p>Así mismo, hay que tener en cuenta que las operaciones <tt class="docutils literal">send, recv</tt>
+pueden ser bloqueantes. Luego, dado que tenemos como objetivo
+multiplexar pedidos de clientes, no tiene sentido que nuestro server se
+quede bloqueado.</p>
+<p>Las primitivas <tt class="docutils literal">send</tt> y <tt class="docutils literal">recv</tt> aceptan modificadores en su último
+paramétro (<tt class="docutils literal">flags</tt>, ver las man pages). Para que ambas syscalls sean
+no-bloqueantes, existe la opción <tt class="docutils literal">MSG_DONTWAIT</tt>, que genera un valor
+de retorno especial indicando que el socket no estaba listo para la
+operación.</p>
+<p>En Python, la forma mas cómoda de asegurarse el envío no-bloqueante es
+llamar a <tt class="docutils literal">s.setblocking(0)</tt> sobre cada socket que se crea/acepta. Eso
+nos garantiza que todas las llamadas a <tt class="docutils literal">send</tt>,<tt class="docutils literal">recv</tt> sobre ese
+socket van a hacerse con los flags correctos.</p>
+</div>
+<div class="section" id="tarea">
+<h1>Tarea</h1>
+<p>Al igual que el laboratorio anterior, la aplicación se compone por dos
+partes, un cliente y un servidor. El cliente es provisto por la cátedra
+(es el mismo que en el lab-hftp). Ustedes deberán modificar el servidor
+codificado para el lab-hftp de forma tal que acepte y maneje pedidos de
+distintos clientes <strong>concurrentemente</strong>.</p>
+<p>Para ello, deberán:</p>
+<ol class="arabic">
+<li><p class="first">Utilizar el servidor que <strong>ya</strong> desarrollaron en Python para el
+lab-hftp.</p>
+</li>
+<li><p class="first">Utilizar <tt class="docutils literal">poll</tt> como mecanismo para la paralelización de la
+atención a clientes del servidor HFTP. Es recomendable leer la
+manpage en "C" que explica los detalles de bajo nivel:</p>
+<pre class="literal-block">POLL(2)                                       Linux Programmer’s Manual
+
+NAME
+       poll - wait for some event on a file descriptor
+
+SYNOPSIS
+       #include &lt;poll.h&gt;
+
+       int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+
+DESCRIPTION
+       poll()  performs a similar task to select(2): it waits for one of
+       a set of file descriptors to become ready to perform I/O.
+
+       The set of file descriptors to be monitored is specified in the
+       fds argument, which is an array of nfds struc‐ tures of the
+       following form:
+
+           struct pollfd {
+               int   fd;         /* file descriptor */
+               short events;     /* requested events */
+               short revents;    /* returned events */
+           };
+
+       The field fd contains a file descriptor for an open file.
+
+       The field events is an input parameter, a bit mask specifying the
+       events the application is interested in.
+
+       The  field  revents  is an output parameter, filled by the kernel
+       with the events that actually occurred.  The bits returned in
+       revents can include any of those specified in events, or one of
+       the values POLLERR,  POLLHUP, or  POLLNVAL.   (These  three  bits
+       are meaningless in the events field, and will be set in the
+       revents field whenever the corresponding condition is true.)
+
+       If none of the events requested (and no error) has occurred for
+       any  of  the  file  descriptors,  then  poll() blocks until one
+       of the events occurs.
+
+       The timeout argument specifies an upper limit on the time for
+       which poll() will block, in milliseconds.  Spec‐ ifying a
+       negative value in timeout means an infinite timeout.
+</pre>
+</li>
+</ol>
+<p>En Python, el uso de esta primitiva y la estructura asociada están
+envueltas (<em>wrapped</em>) por un TAD en el módulo <tt class="docutils literal">select</tt>, llamado
+<a class="reference external" href="http://docs.python.org/library/select.html#poll-objects">select.poll</a>.</p>
+<p>El servidor debe manejar cualquier cantidad de conexiones simultáneas.
+Los clientes podrán realizar las solicitudes ya enunciadas en el
+lab-hftp:</p>
+<ul class="simple">
+<li><tt class="docutils literal">get_file_listing</tt>
+Listar todos los archivos que se encuentren disponibles en el
+servidor.</li>
+<li><tt class="docutils literal">get_metadata FILENAME</tt>
+Dado un archivo existente en el servidor, obtener los metadatos del
+mismo. Para este laboratorio, la información proporcionada por el
+servidor será el tamaño del archivo.</li>
+<li><tt class="docutils literal">get_slice OFFSET SIZE</tt>
+Dado un archivo existente en el servidor, obtener una fragmento del
+mismo. Este fragmento estará dado por un <em>offset</em>, <em>size</em>.</li>
+<li><tt class="docutils literal">quit</tt>
+El cliente solicita la finalización de la conexión, y ambos se
+desconectan.</li>
+</ul>
+<p>Hay que tener en cuenta que cuando se el servidor está mandando una
+respuesta a un cliente, este último puede repentinamente cerrar la
+conexión. Esto genera que le llegue al servidor la señal <tt class="docutils literal">SIGPIPE</tt>,
+que van a tener que capturar como una excepción.</p>
+<p>El problema clásico que se les presenta es cómo aceptar conexiones
+entrantes usando <tt class="docutils literal">poll</tt>. La solución es simple: piensen que cuando el
+servidor comienza su ejecución, en algún punto dado (antes de empezar a
+aceptar conexiones) crea un socket sobre el cual se escucharán pedidos
+de conexión. Este descriptor de socket (le llamemos <tt class="docutils literal">listener_fd</tt>)
+debe ser agregado a la lista de descriptores que le interesan al
+servidor, dentro del TAD <tt class="docutils literal">poll</tt>. Cuando esta llamada retorne, se
+consulta si la lista de eventos resultantes tiene el bit de <tt class="docutils literal">POLLIN</tt>
+prendido asociado a ese socket. Si es así, se llama a <tt class="docutils literal">accept</tt> sobre
+<tt class="docutils literal">listener_fd</tt>, y se obtiene un nuevo socket <tt class="docutils literal">new_fd</tt> que será la vía
+de comunicación con este nuevo cliente.</p>
+<div class="section" id="ayudas">
+<h2>Ayudas</h2>
+<p>Para forzar que un código pueda escuchar conexiones entrantes en un
+puerto aunque esté en uso, se le puede setear la opción <tt class="docutils literal">SO_REUSEADDR</tt>
+usando la función <tt class="docutils literal">setsockopt</tt> (ver <tt class="docutils literal">man 7 socket</tt>). Esto puede
+serles útil ya que cuando matan al server y no cierran el socket al
+recibir <tt class="docutils literal">SIGTERM</tt>, el puerto queda marcado como "en uso" por un
+período de tiempo.</p>
+</div>
+</div>
+<div class="section" id="algunas-pruebas-a-realizar">
+<h1>Algunas pruebas a realizar</h1>
+<ul class="simple">
+<li>Conectar un cliente y mandar un comando. Sin desconectar ese, desde
+otra terminal conectar un segundo cliente y mandar otro comando.
+Ambos deberían ser atendidos.</li>
+<li>Poner a transferir un archivo grande. Mientras eso sucede, conectar
+un segundo cliente, y poner a transferir un archivo chico, de forma
+tal que el segundo termine antes que el primero.</li>
+<li>Hacer un cliente que mande un comando a medias (<tt class="docutils literal">get_file_l</tt>)
+espere un minuto, y más tarde lo termine (<tt class="docutils literal">isting\r\n</tt>). Comprobar
+que en ese tiempo intermedio, otro cliente se puede conectar y bajar
+cosas.</li>
+</ul>
+</div>
+<div class="section" id="requisitos-del-codigo-a-entregar">
+<h1>Requisitos del código a entregar</h1>
+<ul class="simple">
+<li>La fecha límite de entrega es el día lunes de 27 de Abril, a las
+23:59.</li>
+<li>Las entregas serán a través del repositorio provisto por la
+Facultad para la Cátedra.</li>
+<li>Junto con el código, se deberá entregar un <strong>informe</strong> en el cual se
+explique detalladamente como estructuraron el servidor, las
+decisiones de diseño tomadas, dificultades con las que se
+encontraron, y cómo las resolvieron. El informe debe estar en
+escrito en texto plano, Markdown o reStructuredText.</li>
+<li>Se deberá mantener el estilo de codificación
+<a class="reference external" href="http://www.python.org/dev/peps/pep-0008/">PEP8</a>.</li>
+<li>También se exigirán las metodologías de programación defensiva
+aprendidas en las materias correlativas.</li>
+<li>El trabajo es grupal. Todos los integrantes del grupo deberán poder
+explicar el código presentado.</li>
+<li>No está permitido compartir código entre grupos.</li>
+</ul>
+</div>
+</div>
+
+
+</body></html>
